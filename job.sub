@@ -1,0 +1,21 @@
+#!/bin/bash -l
+#
+
+#SBATCH --job-name=GPU
+#SBATCH -N 1 # number of nodes
+#SBATCH --partition=cuda.q
+#SBATCH --gres=gpu:1
+
+# Si voleu informació sobre la GPU que fareu servir
+#/usr/local/cuda-9.0/samples/1_Utilities/deviceQuery/deviceQuery
+
+module load cuda/9.0
+module unload gcc/8.2.0
+
+g++ -zmuldefs -c common.cpp -o common.o
+
+nvcc -c nn-vo-db.cu -o nn-vo-db.o
+
+g++ -zmuldefs -o nn-vo-db common.o nn-vo-db.o -L/usr/local/cuda-9.0/lib64 -lm -lcudart -lrt
+
+./nn-vo-db
